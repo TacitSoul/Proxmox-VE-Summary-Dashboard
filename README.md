@@ -1,10 +1,18 @@
-# PVE Summary Overview · v1
+# Proxmox VE概要看板
 
 An unofficial local overview extension for the Proxmox VE node Summary page.
+
+**当前版本：`V1.0.0`**
 
 面向 **Proxmox VE 9.2.x** 的非官方本地扩展：为节点「概要」增加总览面板，原生 RRD 图表保留在「趋势图」页。已观察的单机部署版本为 **pve-manager 9.2.21**；不宣称其它版本或所有硬件均兼容。
 
 **它不是官方插件。** 安装器会修改 PVE 自带的 UI/API 文件，PVE 升级可能覆盖扩展或改变文件布局。已做静态/离线检查和单机部署冒烟；**完整生产验收未完成**。下方离线测试只检查本仓库打包一致性及语法，不等于真实权限、界面、恢复或性能验收。
+
+## 看板预览
+
+![Proxmox VE概要看板：使用示例数据渲染的当前界面](docs/images/dashboard.png)
+
+使用当前界面代码渲染，示例数据，非真实主机信息/非生产验收截图。
 
 ## 功能与数据口径
 
@@ -23,7 +31,7 @@ An unofficial local overview extension for the Proxmox VE node Summary page.
 | `SummaryOverview.pm` | 节点硬件与今日流量数据，安装到 PVE Perl 模块目录 |
 | `overview.js` | 总览布局、图表、样式与原生 ExtJS 页面集成 |
 | `apply.sh` | 本地安装/移除、布局检查、备份与失败恢复尝试 |
-| `VERSION` | 本次首发版本，字面 `v1` |
+| `VERSION` | 当前发布版本，字面 `V1.0.0` |
 | `SHA256SUMS` | **仅绑定上述三个产品文件**；不绑定自身或文档/测试，不构成数字签名 |
 | `tests/check.py` | Python 标准库离线打包/语法检查 |
 
@@ -44,17 +52,17 @@ An unofficial local overview extension for the Proxmox VE node Summary page.
 
 `apply` 和 `remove` 在有实际 UI/API 文件改动时会重启 **`pvedaemon`、`pveproxy`**，管理页面/API 可能短暂断开。脚本不主动停止 VM/CT，**这不构成虚拟机/容器绝不受影响的保证**。无变化的重复操作通常无需重启。
 
-推荐在 root shell 中，将已核对的首发版本放到 **root 拥有的 `/opt/pve-summary-overview`**。例如，在该目录尚不存在时：
+推荐在 root shell 中，将已核对的发布版本放到 **root 拥有的 `/opt/pve-summary-overview`**。例如，在该目录尚不存在时：
 
 ```bash
 umask 022
-git clone --branch v1 --depth 1 https://github.com/TacitSoul/pve-summary-overview.git /opt/pve-summary-overview
+git clone --branch V1.0.0 --depth 1 https://github.com/TacitSoul/Proxmox-VE-Summary-Dashboard.git /opt/pve-summary-overview
 cd /opt/pve-summary-overview
 sha256sum -c SHA256SUMS
 bash -p ./apply.sh apply
 ```
 
-没有 Git 时，也可先下载并检查 v1 源码，再由 root 将同一版本的三个产品文件放在该目录；不要混用不同版本文件。不要使用 `curl | bash` 或直接执行未检查的远程脚本。
+没有 Git 时，也可先下载并检查 V1.0.0 源码，再由 root 将同一版本的三个产品文件放在该目录；不要混用不同版本文件。不要使用 `curl | bash` 或直接执行未检查的远程脚本。
 
 - `SummaryOverview.pm`、`overview.js` 必须与 `apply.sh` 位于同一目录。
 - 安装器会检查目标文件、payload 文件及相应父目录的 root 所有权，拒绝组/其它用户可写的代码路径与文件 symlink；源码目录及其每级父目录也必须符合要求。推荐普通文件 `0644`、`apply.sh` 和目录 `0755`。不要把不可信目录简单改成 root 所有后就执行。
@@ -102,7 +110,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 tests/check.py
 
 检查内容：
 
-1. `VERSION` 精确为 `v1`，三个产品 SHA256 与测试固定值及 `SHA256SUMS` 一致。此预检失败会在调用其它解释器之前退出，返回非零。
+1. `VERSION` 精确为 `V1.0.0`，三个产品 SHA256 与测试固定值及 `SHA256SUMS` 一致。此预检失败会在调用其它解释器之前退出，返回非零。
 2. `bash -n -- apply.sh` 只检查 Shell 语法；`node --check overview.js` 只检查 JavaScript 语法。
 3. `perl -c -` 通过标准输入编译 Perl 源码，注入最小、仅供编译的 `PVE::Tools` stub，不加载真实 PVE 模块。Perl `JSON` 使用已安装模块，不联网补齐依赖。
 

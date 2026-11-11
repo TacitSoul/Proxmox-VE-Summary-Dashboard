@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline v1 packaging checks. No installer, collector or service is executed."""
+"""Offline V1.0.0 packaging checks. No installer, collector or service is executed."""
 
 import hashlib
 import os
@@ -27,16 +27,16 @@ def checked_bytes(name):
 
 def verify_payloads():
     """Fail before invoking any interpreter if the frozen payload/version differs."""
-    if checked_bytes("VERSION") != b"v1\n":
-        raise ValueError("VERSION must contain exactly v1 followed by a newline")
+    if checked_bytes("VERSION") != b"V1.0.0\n":
+        raise ValueError("VERSION must contain exactly V1.0.0 followed by a newline")
     for name, expected in PAYLOAD_SHA256.items():
         actual = hashlib.sha256(checked_bytes(name)).hexdigest()
         if actual != expected:
-            raise ValueError(f"{name}: SHA256 differs from the v1 payload")
+            raise ValueError(f"{name}: SHA256 differs from the V1.0.0 payload")
     lines = checked_bytes("SHA256SUMS").decode("ascii").splitlines()
     expected_lines = [f"{sha}  {name}" for name, sha in PAYLOAD_SHA256.items()]
     if sorted(lines) != sorted(expected_lines):
-        raise ValueError("SHA256SUMS must bind exactly the three v1 payloads")
+        raise ValueError("SHA256SUMS must bind exactly the three V1.0.0 payloads")
 
 
 def safe_environment():
@@ -79,7 +79,7 @@ class OfflineChecks(unittest.TestCase):
         self.assertEqual(result.returncode, 0, output)
         return output
 
-    def test_01_v1_payloads_and_version(self):
+    def test_01_V1_0_0_payloads_and_version(self):
         verify_payloads()
 
     def test_02_bash_syntax_only(self):
